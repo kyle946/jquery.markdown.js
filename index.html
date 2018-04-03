@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>markdown文档 调用演示</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="jquery-1.8.0.js" type="text/javascript"></script>
+        <script src="md5.min.js" type="text/javascript"></script>
+        <script src="jquery.markdown.js" type="text/javascript"></script>
+    </head>
+    <body>
+        <h1>自动生成 API文档（markdown格式）调用演示</h1>
+        <p>1、在chrome 浏览器下，按F12 打开 开发者控制工具 </p>
+        <p>2、在 console 下执行 ：obj.test() </p>
+        <p>3、即可看到演示程序生成的markdown格式的文件 ， 需要自己接口的，照着 obj.test 方法 写就行了。 </p>
+        <script>
+            window.obj = {};
+            obj.key = md5('111');
+            obj.getLocalTime = function (i) {
+                //参数i为时区值数字，比如北京为东八区则输进8,西5输入-5
+                if (typeof i !== 'number')
+                    return;
+                var d = new Date();
+                //得到1970年一月一日到现在的秒数
+                var len = d.getTime();
+                //本地时间与GMT时间的时间偏移差
+                var offset = d.getTimezoneOffset() * 60000;
+                //得到现在的格林尼治时间
+                var utcTime = len + offset;
+                return new Date(utcTime + 3600000 * i);
+            };
+
+            obj.getTime = function () {
+                obj.date = obj.getLocalTime(8);
+                var aa = obj.date.getTime() / 1000;
+                return aa.toFixed(0);
+            };
+            
+            obj.param = { }
+            obj.test = function(){
+                obj.param.rand = obj.getTime();
+                obj.param.sign = md5(obj.key+obj.param.rand);
+                $.ajax({
+                    url: 'http://www.yixinu.com/?v=/index/apptest',
+                    beforeSend: function () {
+
+                    },
+                    error: function () {
+
+                    },
+                    cache: false,
+                    dataType: 'json',
+                    data: obj.param,
+                    type: 'POST',
+                    success: function (d) {
+                        console.log(d);
+                        //生成markdown文档
+                        $.markdown(this,d);
+                    }
+                });
+            };
+        </script>
+    </body>
+</html>
