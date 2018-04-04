@@ -193,7 +193,7 @@
                 tmpfield = tmpfield.replace(/{field}/g, key);
                 getField += tmpfield;
             }
-            getField += '| | | | | | \n';
+            getField += '| | | | | -| \n';
 
             //取POST参数，并生成模板
             var postRequestObj = PostRequest();
@@ -213,7 +213,7 @@
                 tmpfield = tmpfield.replace(/{field}/g, key);
                 postField += tmpfield;
             }
-            postField += '| | | | | | \n';
+            postField += '| | | | | -| \n';
 
             //取返回数据
             if (typeof response == 'object') {
@@ -266,9 +266,10 @@
                     }
 
                     if (fieldtype == 'object') {
-                        respnseField += '| | | | | | \n';
+                        respnseField += '| **[' + key + ']:** | | | | | \n';
                         var sonfield = response[key];
                         for (var k1 in sonfield) {
+
                             //如果key是个数字，表示是输出的数组键值对，这种情况只取一条即可
                             var rule = new RegExp(/^[0-9]{1,11}$/);
                             if (rule.test(k1)) {
@@ -293,7 +294,27 @@
                                 }
                                 break;
                             }
+
+                            if (typeof k1 == 'string') {
+                                var fieldtype1 = typeof sonfield[k1];
+                                var tmp = "";
+                                var tmpfield = paramResponse;
+
+                                tmp = fieldDict[k1] ? fieldDict[k1].desc : "";
+                                tmpfield = tmpfield.replace(/{desc}/g, tmp);
+
+                                //tmp = fieldDict[k2] ? fieldDict[k2].type : "string";
+                                tmpfield = tmpfield.replace(/{type}/g, fieldtype1);
+
+                                tmp = fieldDict[k1] ? fieldDict[k1].require : "Y";
+                                tmpfield = tmpfield.replace(/{require}/g, tmp);
+
+                                tmpfield = tmpfield.replace(/{field}/g, k1);
+                                respnseField += tmpfield;
+                            }
+
                         }
+                        respnseField += '| | | | | | \n';
                     }
 
                 }
@@ -327,7 +348,7 @@
             }
             fieldDictFileName = fieldDictFileName ? fieldDictFileName : interfaceDescription.common.filename + '.js';
             loadJS(path + fieldDictFileName, function () {
-                console.log(fieldDict);
+                //console.log(fieldDict);
                 exec();
             });
         });
