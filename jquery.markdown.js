@@ -222,18 +222,20 @@
                     for (var key in response['data']) {
                         var tmp = response['data'][key];
                         aa[key] = response['data'][key];
-                        break;
+                        var rule = new RegExp(/^[0-9]{1,11}$/);
+                        if (rule.test(key)) {
+
+                            break;
+                        }
                     }
                     response['data'] = aa;
                 }
                 if (response['list']) {
                     for (var key in response['list']) {
                         var aa = {};
-                        for (var key in response['list']) {
-                            var tmp = response['list'][key];
-                            aa[key] = response['list'][key];
-                            break;
-                        }
+                        var tmp = response['list'][key];
+                        aa[key] = response['list'][key];
+                        break;
                         response['list'] = aa;
                     }
                 }
